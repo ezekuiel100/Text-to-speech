@@ -1,17 +1,29 @@
 import { execFile } from "child_process";
+import path from "path";
+import cors from "cors";
 import express from "express";
 
 const app = express();
+app.use(cors());
+app.use(express.json());
 
 app.post("/synthesize", (req, res) => {
   const text = req.body.text;
-  const output = "audio";
+  const outputDir = path.resolve("./audio");
+  const outputFile = path.join(outputDir, "output.wav");
+  console.log(outputFile);
 
   execFile(
     "python",
-    ["synthesize.py", text, output],
+    ["synthesize.py", text, outputFile],
     (error, stdout, stderr) => {
-      res.sendFile(output);
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        res.status(500).send("Error during synthesis");
+        return;
+      }
+
+      res.sendFile(outputFile);
     }
   );
 });

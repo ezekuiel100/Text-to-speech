@@ -1,6 +1,6 @@
 # synthesize.py
 import sys
-from tts import TTS
+from TTS.api import TTS
 
 def synthesize(text, output_path):
     tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True, gpu=False)
