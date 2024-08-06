@@ -4,18 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Text to speech</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <main>
+      <h1>Digite um texto</h1>
+      <textarea></textarea>
+      <button onclick="textSpeech()">Enviar</button>
+      <audio id="audio" controls></audio>
+    </main>
+
     <script>
-      fetch("http://localhost:3007/synthesize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: "bem vindo ao youtube ezequiel" }),
-      })
-        .then((res) => res.text())
-        .then((data) => console.log(data));
+      function textSpeech() {
+        const textarea = document.querySelector("textarea");
+        const audioPlay = document.querySelector("#audio");
+        const button = document.querySelector("button");
+        const text = textarea.value;
+
+        if (!text) {
+          console.log("Adicione um texto");
+          return;
+        }
+
+        button.innerText = "Gerando Áudio...";
+        button.disabled = true;
+
+        fetch("http://localhost:3007/synthesize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+          }),
+        })
+          .then((res) => res.blob())
+          .then((blob) => {
+            const fileUrl = URL.createObjectURL(blob);
+            audioPlay.src = fileUrl;
+            audioPlay.style.display = "block";
+            console.log("Áudio recebido e configurado para reprodução.");
+          })
+          .catch((err) => console.log(err))
+          .finally(() => {
+            button.innerText = "Enviar";
+            button.disabled = false;
+          });
+      }
     </script>
   </body>
 </html>

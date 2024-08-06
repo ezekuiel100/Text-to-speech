@@ -11,7 +11,6 @@ app.post("/synthesize", (req, res) => {
   const text = req.body.text;
   const outputDir = path.resolve("./audio");
   const outputFile = path.join(outputDir, "output.wav");
-  console.log(outputFile);
 
   execFile(
     "python",
@@ -22,7 +21,7 @@ app.post("/synthesize", (req, res) => {
         res.status(500).send("Error during synthesis");
         return;
       }
-
+      console.log(text);
       res.sendFile(outputFile);
     }
   );
